@@ -27,12 +27,23 @@ mongoose.connect(process.env.MONGODB_URI)
     });
   });
 
+// Middleware to check DB connection
+const checkDB = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ 
+      error: 'Database connection not established', 
+      details: 'Check MongoDB Atlas IP whitelisting (0.0.0.0/0) and Vercel environment variables.' 
+    });
+  }
+  next();
+};
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Vennila Backend is running', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
 });
 
 // Create a new link with embedding
-app.post('/api/links', async (req, res) => {
+app.post('/api/links', checkDB, async (req, res) => {
   try {
     const { subject, link } = req.body;
     if (!subject || !link) {
@@ -57,7 +68,7 @@ app.post('/api/links', async (req, res) => {
 });
 
 // Get all links
-app.get('/api/links', async (req, res) => {
+app.get('/api/links', checkDB, async (req, res) => {
   try {
     const links = await Link.find().sort({ createdAt: -1 });
     res.json(links);
@@ -68,7 +79,7 @@ app.get('/api/links', async (req, res) => {
 });
 
 // Delete a link
-app.delete('/api/links/:id', async (req, res) => {
+app.delete('/api/links/:id', checkDB, async (req, res) => {
   try {
     const { id } = req.params;
     await Link.findByIdAndDelete(id);
