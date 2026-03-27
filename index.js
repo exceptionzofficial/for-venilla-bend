@@ -15,8 +15,15 @@ app.use(express.json());
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .then(() => console.log('Connected to MongoDB Successfully'))
+  .catch((err) => {
+    console.error('MONGODB CONNECTION ERROR DETAILS:', {
+      message: err.message,
+      code: err.code,
+      name: err.name,
+      uri_provided: !!process.env.MONGODB_URI
+    });
+  });
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Vennila Backend is running', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
