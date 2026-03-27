@@ -19,12 +19,19 @@ const uri = (process.env.MONGODB_URI || '').replace(/\s/g, '');
 mongoose.connect(uri)
   .then(() => console.log('Connected to MongoDB Successfully'))
   .catch((err) => {
-    const maskedUri = uri.replace(/\/\/([^:]+):([^@]+)@/, '// $1:****@');
+    const rawUri = process.env.MONGODB_URI || '';
+    const maskedRaw = rawUri.replace(/\/\/([^:]+):([^@]+)@/, '// $1:****@');
+    const processedMasked = uri.replace(/\/\/([^:]+):([^@]+)@/, '// $1:****@');
+    
     console.error('MONGODB CONNECTION ERROR DETAILS:', {
       message: err.message,
       code: err.code,
       name: err.name,
-      masked_uri: maskedUri,
+      raw_masked: maskedRaw,
+      processed_masked: processedMasked,
+      uri_length: rawUri.length,
+      processed_length: uri.length,
+      first_30_chars_hex: rawUri.substring(0, 30).split('').map(c => c.charCodeAt(0).toString(16)).join(' '),
       atlas_hint: 'Ensure your Vercel IP or 0.0.0.0/0 is whitelisted in MongoDB Atlas Network Access.'
     });
   });
