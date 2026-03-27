@@ -17,6 +17,7 @@ app.use(express.json());
 mongoose.set('bufferCommands', false);
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB Successfully'))
+  .catch((err) => {
     const uri = process.env.MONGODB_URI || '';
     const maskedUri = uri.replace(/\/\/([^:]+):([^@]+)@/, '// $1:****@');
     console.error('MONGODB CONNECTION ERROR DETAILS:', {
