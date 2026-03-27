@@ -21,7 +21,8 @@ mongoose.connect(process.env.MONGODB_URI)
       message: err.message,
       code: err.code,
       name: err.name,
-      uri_provided: !!process.env.MONGODB_URI
+      uri_provided: !!process.env.MONGODB_URI,
+      atlas_hint: 'Ensure your Vercel IP or 0.0.0.0/0 is whitelisted in MongoDB Atlas Network Access.'
     });
   });
 
