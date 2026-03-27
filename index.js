@@ -17,12 +17,13 @@ app.use(express.json());
 mongoose.set('bufferCommands', false);
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB Successfully'))
-  .catch((err) => {
+    const uri = process.env.MONGODB_URI || '';
+    const maskedUri = uri.replace(/\/\/([^:]+):([^@]+)@/, '// $1:****@');
     console.error('MONGODB CONNECTION ERROR DETAILS:', {
       message: err.message,
       code: err.code,
       name: err.name,
-      uri_provided: !!process.env.MONGODB_URI,
+      masked_uri: maskedUri,
       atlas_hint: 'Ensure your Vercel IP or 0.0.0.0/0 is whitelisted in MongoDB Atlas Network Access.'
     });
   });
