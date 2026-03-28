@@ -13,6 +13,15 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+const normalizeUrl = (url) => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
+};
+
 // MongoDB Connection Management
 let cachedConnection = null;
 
@@ -90,7 +99,7 @@ app.post('/api/links', checkDB, async (req, res) => {
 
     const newLink = new Link({
       subject,
-      link,
+      link: normalizeUrl(link),
       embedding
     });
 
